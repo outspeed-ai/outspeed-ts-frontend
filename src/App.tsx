@@ -1,37 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { RealtimeAudio } from './outspeed-react'
+import { useWebRTC, RealtimeAudio } from './outspeed-react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <RealtimeAudio track={null}/>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const {
+        connect,
+        connectionStatus,
+        getRemoteAudioTrack,
+    } = useWebRTC({
+        config: {
+            // Add your function URL.
+            functionURL: "<my-function-url>",
+            audio: true,
+            video: true,
+        },
+    });
+    return (
+        <div>
+            <span>Connection Status: {connectionStatus}</span>
+            {connectionStatus === "SetupCompleted" && (
+                <button onClick={connect}>Connect</button>
+            )}
+            {getRemoteAudioTrack() && <RealtimeAudio track={getRemoteAudioTrack()} />}
+        </div>
+    );
 }
 
 export default App
